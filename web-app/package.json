@@ -1,0 +1,12 @@
+{
+  "name": "web-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright Extension Test — static web app, WebSocket subscriber",
+  "scripts": {
+    "serve": "npx serve . -p 3000"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

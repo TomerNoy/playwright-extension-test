@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playwright Extension Test — Web App</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      gap: 32px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+
+    header p {
+      font-size: 14px;
+      color: #64748b;
+      margin: 0;
+    }
+
+    .card {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 40px 56px;
+      text-align: center;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+    }
+
+    .counter-label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+
+    #sync-count {
+      display: block;
+      font-size: 72px;
+      font-weight: 800;
+      color: #38bdf8;
+      line-height: 1;
+      transition: transform 0.15s ease, color 0.15s ease;
+    }
+
+    #sync-count.bump {
+      transform: scale(1.15);
+      color: #7dd3fc;
+    }
+
+    .ws-status {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #475569;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      transition: background 0.3s;
+    }
+
+    .dot.connected {
+      background: #22c55e;
+    }
+
+    #status-text {
+      transition: color 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Playwright Extension Test</h1>
+    <p>Real-time sync monitor — Web App</p>
+  </header>
+
+  <div class="card">
+    <p class="counter-label">Items Synced</p>
+    <span id="sync-count" data-testid="sync-count">0</span>
+  </div>
+
+  <div class="ws-status">
+    <span class="dot" id="ws-dot"></span>
+    <span id="status-text">Connecting…</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

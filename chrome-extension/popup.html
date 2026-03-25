@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playwright Extension Test</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      min-width: 220px;
+      padding: 20px;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin: 0 0 16px;
+    }
+
+    .counter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+
+    .counter-label {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    #sync-count {
+      font-size: 24px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    #sync-btn {
+      width: 100%;
+      padding: 10px;
+      background: #0ea5e9;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    #sync-btn:hover {
+      background: #0284c7;
+    }
+
+    #sync-btn:active {
+      background: #0369a1;
+    }
+
+    .status {
+      margin-top: 12px;
+      font-size: 11px;
+      text-align: center;
+      color: #475569;
+    }
+
+    .status.connected {
+      color: #22c55e;
+    }
+
+    .status.disconnected {
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+  <h1>Playwright Extension Test</h1>
+
+  <div class="counter-row">
+    <span class="counter-label">Items Synced</span>
+    <span id="sync-count" data-testid="sync-count">0</span>
+  </div>
+
+  <button id="sync-btn" data-testid="sync-btn">Sync Item</button>
+
+  <p class="status" id="ws-status">Connecting…</p>
+
+  <script src="popup.js"></script>
+</body>
+</html>

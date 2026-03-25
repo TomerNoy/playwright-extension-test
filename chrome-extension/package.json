@@ -1,0 +1,6 @@
+{
+  "name": "chrome-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright Extension Test — Chrome Extension (Manifest V3)"
+}

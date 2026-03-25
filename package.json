@@ -1,0 +1,15 @@
+{
+  "name": "playwright-extension-test",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "sync-server",
+    "chrome-extension",
+    "web-app",
+    "tests/playwright"
+  ],
+  "scripts": {
+    "server": "node sync-server/server.js",
+    "test": "npm run test --workspace=tests/playwright"
+  }
+}
