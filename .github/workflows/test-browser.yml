@@ -1,10 +1,10 @@
+# CI pipeline — runs Playwright tests on every push/PR.
+# Starts servers via global-setup.js, so no manual server steps needed here.
+
 name: Browser Tests (Playwright)
 
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+  workflow_dispatch:
 
 jobs:
   playwright:
@@ -13,45 +13,42 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      # ── Checkout ──────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── Node.js ──────────────────────────────────────────────────────────
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      # ── Dependencies ─────────────────────────────────────────────────────
+      # `npm ci` installs from lock file (faster, deterministic, CI-friendly)
       - name: Install dependencies
         run: npm ci
 
-      # ── Playwright browsers ───────────────────────────────────────────────
+      # --with-deps installs OS-level libs Chromium needs (e.g. libgbm, Xvfb).
+      # Xvfb (virtual framebuffer) is required because extensions need headless:false,
+      # and Playwright auto-launches Xvfb on Linux when no real display is available.
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
         working-directory: tests/playwright
 
-      # ── sync-server ───────────────────────────────────────────────────────
       - name: Install sync-server dependencies
         run: npm ci
         working-directory: sync-server
 
-      # ── web-app static server ─────────────────────────────────────────────
       - name: Install web-app dependencies
         run: npm ci
         working-directory: web-app
 
-      # ── Run tests ─────────────────────────────────────────────────────────
-      # global-setup.ts starts sync-server and serve; no manual step needed
+      # global-setup.js starts both servers automatically
       - name: Run Playwright tests
         run: npx playwright test
         working-directory: tests/playwright
         env:
           CI: true
 
-      # ── Artifacts ─────────────────────────────────────────────────────────
+      # Upload reports/artifacts regardless of pass/fail
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4

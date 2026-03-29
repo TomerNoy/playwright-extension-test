@@ -1,9 +1,5 @@
-/**
- * app.js — Web App WebSocket subscriber
- *
- * Connects to the sync-server, receives count updates, and updates the DOM.
- * Reconnects automatically on disconnect.
- */
+// Web app — a second client that subscribes to the sync-server via WebSocket.
+// Used as the "other surface" in tests to verify extension syncs propagate.
 
 const WS_URL = 'ws://localhost:8080';
 const RECONNECT_DELAY_MS = 2000;
@@ -19,39 +15,25 @@ function setConnected(connected) {
 
 function setCount(n) {
   countEl.textContent = String(n);
-
-  // Brief scale animation to make updates obvious
   countEl.classList.remove('bump');
-  void countEl.offsetWidth; // trigger reflow to restart animation
+  void countEl.offsetWidth; // reflow to restart CSS animation
   countEl.classList.add('bump');
   setTimeout(() => countEl.classList.remove('bump'), 200);
 }
 
 function connect() {
   const ws = new WebSocket(WS_URL);
-
   ws.addEventListener('open', () => setConnected(true));
-
   ws.addEventListener('message', (event) => {
     let data;
-    try {
-      data = JSON.parse(event.data);
-    } catch {
-      return;
-    }
-    if (typeof data.count === 'number') {
-      setCount(data.count);
-    }
+    try { data = JSON.parse(event.data); } catch { return; }
+    if (typeof data.count === 'number') setCount(data.count);
   });
-
   ws.addEventListener('close', () => {
     setConnected(false);
     setTimeout(connect, RECONNECT_DELAY_MS);
   });
-
-  ws.addEventListener('error', () => {
-    ws.close();
-  });
+  ws.addEventListener('error', () => ws.close());
 }
 
 connect();

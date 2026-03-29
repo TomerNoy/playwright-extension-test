@@ -1,13 +1,6 @@
-/**
- * fixtures.js — Custom Playwright fixtures for Chrome Extension testing
- *
- * The default Playwright `context` fixture creates an isolated browser context.
- * Chrome extensions (especially MV3 service workers) only load into a
- * *persistent* context — the one created by chromium.launchPersistentContext().
- *
- * This file overrides `context` and adds an `extensionId` fixture so every
- * test that imports from here gets a properly configured browser.
- */
+// Custom fixtures — Playwright's dependency-injection system.
+// We override the default `context` because Chrome extensions only work
+// in a persistent context (launchPersistentContext), not the default isolated one.
 
 const http = require('http');
 const { test: base, chromium, expect } = require('@playwright/test');
@@ -15,6 +8,7 @@ const path = require('path');
 
 const EXTENSION_PATH = path.resolve(__dirname, '../../chrome-extension');
 
+// Zeros the server counter so each test starts from count = 0
 function resetServer() {
   return new Promise((resolve) => {
     const req = http.request(
@@ -26,14 +20,15 @@ function resetServer() {
   });
 }
 
+// base.extend() creates a new `test` with custom fixtures injected into every test
 const test = base.extend({
-  // Each test gets its own persistent context with the extension loaded.
-  // The server counter is reset first so each test starts from count = 0.
+  // Override built-in `context` — launches a real browser profile with the extension loaded.
+  // Code after use() is teardown (runs when the test finishes).
   context: async ({}, use) => {
     await resetServer();
-
     const context = await chromium.launchPersistentContext('', {
-      headless: false,
+      headless: false,  // extensions require a visible browser
+      slowMo: 1000,      // ms delay before every action (click, type, goto, etc.)
       args: [
         `--disable-extensions-except=${EXTENSION_PATH}`,
         `--load-extension=${EXTENSION_PATH}`,
@@ -43,13 +38,13 @@ const test = base.extend({
     await context.close();
   },
 
-  // Resolves the runtime extension ID from the service worker URL
+  // Extracts the extension's random runtime ID from its service worker URL
+  // so tests can navigate to chrome-extension://<id>/popup.html
   extensionId: async ({ context }, use) => {
     let [worker] = context.serviceWorkers();
     if (!worker) {
       worker = await context.waitForEvent('serviceworker', { timeout: 10_000 });
     }
-    // URL format: chrome-extension://<id>/background.js
     const extensionId = new URL(worker.url()).hostname;
     await use(extensionId);
   },
